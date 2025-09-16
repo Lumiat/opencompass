@@ -66,7 +66,7 @@ class OpenCompassConfigValidator:
             # 1. 加载数据集
             dataset_class = dataset_config['type']
             dataset_kwargs = {k: v for k, v in dataset_config.items() 
-                            if k not in ['type', 'reader_cfg', 'infer_cfg', 'eval_cfg', 'abbr']}
+                            if k not in ['type', 'infer_cfg', 'eval_cfg', 'abbr']}
             
             dataset = dataset_class(**dataset_kwargs)
             result['dataset_loaded'] = True
