@@ -51,6 +51,29 @@ class OpenCompassConfigValidator:
             
         return results
     
+    def _get_dataset_length(self, dataset):
+        """安全获取数据集长度"""
+        try:
+            return len(dataset)
+        except (TypeError, AttributeError):
+            # 如果没有__len__方法，尝试其他方法
+            if hasattr(dataset, 'dataset'):
+                try:
+                    return len(dataset.dataset)
+                except:
+                    pass
+            
+            # 尝试遍历计算长度（仅计算前1000个以避免太慢）
+            try:
+                count = 0
+                for i, _ in enumerate(dataset):
+                    count += 1
+                    if count >= 1000:  # 限制最大计数以避免太慢
+                        return f"{count}+ (可能更多)"
+                return count
+            except:
+                return "未知"
+    
     def _validate_single_dataset(self, dataset_config: Dict, num_samples: int = 3) -> Dict[str, Any]:
         """验证单个数据集配置"""
         result = {
@@ -66,19 +89,40 @@ class OpenCompassConfigValidator:
             # 1. 加载数据集
             dataset_class = dataset_config['type']
             dataset_kwargs = {k: v for k, v in dataset_config.items() 
-                            if k not in ['type', 'infer_cfg', 'eval_cfg', 'abbr']}
+                            if k not in ['type', 'infer_cfg', 'eval_cfg', 'abbr']}  # 保留reader_cfg
             
             dataset = dataset_class(**dataset_kwargs)
             result['dataset_loaded'] = True
-            print(f"✅ 数据集加载成功，共 {len(dataset)} 个样本")
             
-            if len(dataset) == 0:
-                result['errors'].append("数据集为空")
-                return result
+            # 安全获取数据集长度
+            dataset_length = self._get_dataset_length(dataset)
+            print(f"✅ 数据集加载成功，共 {dataset_length} 个样本")
+            
+            # 2. 尝试获取样本数据
+            samples_collected = 0
+            sample_data = None
+            
+            try:
+                for i, sample in enumerate(dataset):
+                    if i >= num_samples:
+                        break
+                    sample_data = sample
+                    result['samples'].append(dict(sample))
+                    samples_collected += 1
+                    
+                print(f"📋 成功获取 {samples_collected} 个样本")
                 
-            # 2. 检查数据结构
-            sample = dataset[0]
-            actual_columns = list(sample.keys())
+                if sample_data is None:
+                    result['errors'].append("无法获取任何样本数据")
+                    return result
+                    
+            except Exception as e:
+                result['errors'].append(f"获取样本数据失败: {str(e)}")
+                print(f"❌ 获取样本失败: {e}")
+                return result
+            
+            # 3. 检查数据结构
+            actual_columns = list(sample_data.keys())
             print(f"📋 实际数据列: {actual_columns}")
             
             reader_cfg = dataset_config.get('reader_cfg', {})
@@ -100,17 +144,21 @@ class OpenCompassConfigValidator:
                 else:
                     print(f"✅ 输出列存在: {output_col}")
             
-            # 3. 收集样本数据
-            for i in range(min(num_samples, len(dataset))):
-                sample = dataset[i]
-                result['samples'].append(dict(sample))
-                
-            # 4. 测试prompt生成
+            # 4. 显示样本数据
+            print(f"\n📄 样本数据示例:")
+            for i, sample in enumerate(result['samples']):
+                print(f"\n--- 样本 {i+1} ---")
+                for key, value in sample.items():
+                    # 截断长文本以便显示
+                    display_value = str(value)[:200] + "..." if len(str(value)) > 200 else str(value)
+                    print(f"  {key}: {display_value}")
+            
+            # 5. 测试prompt生成
             infer_cfg = dataset_config.get('infer_cfg', {})
             if 'prompt_template' in infer_cfg:
-                self._test_prompt_generation(dataset, infer_cfg, result, num_samples)
+                self._test_prompt_generation(result['samples'], infer_cfg, result, min(num_samples, len(result['samples'])))
             
-            # 5. 测试后处理器
+            # 6. 测试后处理器
             eval_cfg = dataset_config.get('eval_cfg', {})
             if 'pred_postprocessor' in eval_cfg:
                 self._test_postprocessor(eval_cfg, result)
@@ -122,7 +170,7 @@ class OpenCompassConfigValidator:
             
         return result
     
-    def _test_prompt_generation(self, dataset, infer_cfg, result, num_samples):
+    def _test_prompt_generation(self, samples, infer_cfg, result, num_samples):
         """测试prompt生成"""
         try:
             from opencompass.openicl.icl_prompt_template import PromptTemplate
@@ -136,8 +184,7 @@ class OpenCompassConfigValidator:
             prompt_template = PromptTemplate(template=template)
             
             print(f"\n🎯 测试Prompt生成:")
-            for i in range(min(num_samples, len(dataset))):
-                sample = dataset[i]
+            for i, sample in enumerate(samples[:num_samples]):
                 try:
                     generated_prompt = prompt_template.generate_prompt_for_generate_task(sample)
                     result['generated_prompts'].append({
