@@ -41,7 +41,7 @@ ARC_c_eval_cfg = dict(
 
 ARC_c_datasets = [
     dict(
-        abbr='ARC-c',
+        abbr='ARC-c-test-gen',
         type=ARCDataset,
         path='opencompass/ai2_arc-dev',
         name='ARC-Challenge',
