@@ -237,7 +237,7 @@ class OpenCompassConfigInspector:
 
 def main():
     parser = argparse.ArgumentParser(description='OpenCompass配置文件检查工具')
-    parser.add_argument('config_path', help='配置文件路径')
+    parser.add_argument('--config_path', help='配置文件路径')
     parser.add_argument('--samples', '-s', type=int, default=3, 
                        help='显示的样本数量 (默认: 3)')
     
