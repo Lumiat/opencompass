@@ -11,7 +11,7 @@ models = [
         type=HuggingFacewithChatTemplate,
         abbr='qwen2.5-0.5b-instruct-hf',
         path='/research-intern02/xjy/ParaGen-Dataset/models/Qwen2.5-0.5B-Instruct',
-        peft_path='/research-intern02/xjy/ParaGen-Dataset/saves/common_sense_reasoning/ARC-c/Qwen2.5-0.5B-Instruct_lora-rank_8_finetune/checkpoint-749_adapter_model.safetensors',
+        peft_path='/research-intern02/xjy/ParaGen-Dataset/saves/common_sense_reasoning/ARC-c/Qwen2.5-0.5B-Instruct_lora-rank_8_finetune/checkpoint-001',
         max_out_len=4096,
         batch_size=8,
         run_cfg=dict(num_gpus=1),
