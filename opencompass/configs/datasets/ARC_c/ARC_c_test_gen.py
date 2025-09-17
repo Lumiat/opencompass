@@ -5,13 +5,6 @@ from opencompass.openicl.icl_evaluator import AccEvaluator
 from opencompass.datasets import ARCDataset
 from opencompass.utils.text_postprocessors import first_option_postprocess
 
-SYSTEM_PROMPT = (
-    "you are a helpful AI assistant, and you are going to answer the question "
-    "of the user by picking one answer among the given choices. Answer the "
-    "capital character of the choice directly. You'll only need to answer by "
-    "a single [ans] (ans is A,B,C,D or True/False)"
-)
-
 ARC_c_reader_cfg = dict(
     input_columns=['question', 'textA', 'textB', 'textC', 'textD'],
     output_column='answerKey')
@@ -21,11 +14,9 @@ ARC_c_infer_cfg = dict(
         type=PromptTemplate,
         template=dict(
             round=[
-                dict(role='SYSTEM', prompt=SYSTEM_PROMPT),
                 dict(
                     role='HUMAN',
-                    prompt=
-                    '{question}\nA: {textA}\nB: {textB}\nC: {textC}\nD: {textD}\n'
+                    prompt='you are a helpful AI assistant, and you are going to answer the question of the user by picking one answer among the given choices. Answer the chapital character of the choice directly. You\'ll only need to answer by a single [ans] (ans is A,B,C,D or True/False)\n\n{question}\nA: {textA}\nB: {textB}\nC: {textC}\nD: {textD}'
                 )
             ], ),
     ),
