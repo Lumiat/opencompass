@@ -30,7 +30,7 @@ ARC_c_eval_cfg = dict(
     pred_postprocessor=dict(type=first_option_postprocess, options='ABCD'),
 )
 
-ARC_c_datasets = [
+ARC_c_datasets_gen = [
     dict(
         abbr='ARC-c-test-gen',
         type=ARCDataset,
