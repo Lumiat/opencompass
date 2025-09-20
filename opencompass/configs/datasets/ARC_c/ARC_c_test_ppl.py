@@ -15,28 +15,24 @@ ARC_c_infer_cfg = dict(
             'A':
             dict(
                 round=[
-                    dict(role='SYSTEM', prompt='you are a helpful AI assistant, and you are going to answer the question of the user by picking one answer among the given choices. Answer the capital character of the choice directly. You\'ll only need to answer by a single [ans] (ans is A,B,C,D or True/False)'),
                     dict(role='HUMAN', prompt='Question: {question}\nAnswer: '),
                     dict(role='BOT', prompt='{textA}')
                 ], ),
             'B':
             dict(
                 round=[
-                    dict(role='SYSTEM', prompt='you are a helpful AI assistant, and you are going to answer the question of the user by picking one answer among the given choices. Answer the capital character of the choice directly. You\'ll only need to answer by a single [ans] (ans is A,B,C,D or True/False)'),
                     dict(role='HUMAN', prompt='Question: {question}\nAnswer: '),
                     dict(role='BOT', prompt='{textB}')
                 ], ),
             'C':
             dict(
                 round=[
-                    dict(role='SYSTEM', prompt='you are a helpful AI assistant, and you are going to answer the question of the user by picking one answer among the given choices. Answer the capital character of the choice directly. You\'ll only need to answer by a single [ans] (ans is A,B,C,D or True/False)'),
                     dict(role='HUMAN', prompt='Question: {question}\nAnswer: '),
                     dict(role='BOT', prompt='{textC}')
                 ], ),
             'D':
             dict(
                 round=[
-                    dict(role='SYSTEM', prompt='you are a helpful AI assistant, and you are going to answer the question of the user by picking one answer among the given choices. Answer the capital character of the choice directly. You\'ll only need to answer by a single [ans] (ans is A,B,C,D or True/False)'),
                     dict(role='HUMAN', prompt='Question: {question}\nAnswer: '),
                     dict(role='BOT', prompt='{textD}')
                 ], ),
