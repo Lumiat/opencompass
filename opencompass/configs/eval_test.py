@@ -1,15 +1,15 @@
 import argparse
 import sys
+from pathlib import Path
 
 # parse command parameters
 parser = argparse.ArgumentParser(description='OpenCompass evaluation with configurable parameters')
-parser.add_argument('--dataset', type=str, required=True, 
+parser.add_argument('--dataset', type=str, required=True,
                     help='Dataset name (ARC-c, ARC-e, BoolQ, PIQA, OBQA, HellaSwag, WinoGrande)')
 parser.add_argument('--model', type=str, required=True,
                     help='Model name (Qwen2.5-0.5B-Instruct, Mistral-7B-Instruct-v0.3, bert-base-multilingual-cased, gpt2, llama-7b, gemma-3-4b-it)')
 parser.add_argument('--rank', type=int, required=True,
                     help='LoRA rank value (2, 4, 8, 16, 64)')
-
 
 # get parameters from command
 args, unknown = parser.parse_known_args()
@@ -17,9 +17,8 @@ dataset_name = args.dataset
 model_name = args.model
 rank = args.rank
 
-output_file=f"./test_configs/{dataset_name}/{model_name}_{rank}_eval.py"
-output_dir = os.path.dirname(output_file)              
-os.makedirs(output_dir, exist_ok=True)  
+output_file = Path(f"./test_configs/{dataset_name}/{model_name}_{rank}_eval.py")
+output_file.parent.mkdir(parents=True, exist_ok=True)
 
 # dynamic model configuration
 dataset_configs = {
@@ -36,14 +35,14 @@ dataset_configs = {
         'ppl_var': 'ARC_e_datasets_ppl'
     },
     'BoolQ': {
-        'gen': '.datasets.BoolQ.BoolQ_test_gen', 
+        'gen': '.datasets.BoolQ.BoolQ_test_gen',
         'ppl': '.datasets.BoolQ.BoolQ_test_ppl',
         'gen_var': 'BoolQ_datasets_gen',
         'ppl_var': 'BoolQ_datasets_ppl'
     },
     'PIQA': {
         'gen': '.datasets.piqa.piqa_test_gen',
-        'ppl': '.datasets.piqa.piqa_test_ppl', 
+        'ppl': '.datasets.piqa.piqa_test_ppl',
         'gen_var': 'PIQA_datasets_gen',
         'ppl_var': 'PIQA_datasets_ppl'
     },
@@ -67,40 +66,6 @@ dataset_configs = {
     }
 }
 
-# dynamic models configuration
-# model_configs = {
-#     'Qwen2.5-0.5B-Instruct': {
-#         'path': '/research-intern02/xjy/ParaGen-Dataset/models/Qwen2.5-0.5B-Instruct',
-#         'max_out_len': 128,
-#         'batch_size': 8,
-#     },
-#     'Mistral-7B-Instruct-v0.3': {
-#         'path': '/research-intern02/xjy/ParaGen-Dataset/models/Mistral-7B-Instruct-v0.3',
-#         'max_out_len': 128,
-#         'batch_size': 8,
-#     },
-#     'bert-base-multilingual-cased': {
-#         'path': '/research-intern02/xjy/ParaGen-Dataset/models/bert-base-multilingual-cased',
-#         'max_out_len': 128,
-#         'batch_size': 8,
-#     },
-#     'gpt2': {
-#         'path': '/research-intern02/xjy/ParaGen-Dataset/models/gpt2',
-#         'max_out_len': 128,
-#         'batch_size': 8,
-#     },
-#     'llama-7b': {
-#         'path': '/research-intern02/xjy/ParaGen-Dataset/models/llama-7b',
-#         'max_out_len': 128,
-#         'batch_size': 8,
-#     },
-#     'gemma-3-4b-it': {
-#         'path': '/research-intern02/xjy/ParaGen-Dataset/models/gemma-3-4b-it',
-#         'max_out_len': 128,
-#         'batch_size': 8,
-#     },
-# }
-
 # validate dataset configuration
 if dataset_name not in dataset_configs:
     print(f"[Error] Unsupported dataset '{dataset_name}'. Supported datasets: {list(dataset_configs.keys())}")
@@ -109,10 +74,9 @@ if dataset_name not in dataset_configs:
 dataset_cfg = dataset_configs[dataset_name]
 
 # generate configuration files
-template=f"""
+template = f"""
 from mmengine.config import read_base
 # dynamic load datasets configuration
-config = dataset_configs[dataset_name]
 with read_base():
     from {dataset_cfg['gen']} import {dataset_cfg['gen_var']}
     from {dataset_cfg['ppl']} import {dataset_cfg['ppl_var']}
@@ -137,9 +101,10 @@ models=[
 ]
 
 # set work_dir
-work_dir = f'./outputs/{model_name}_{dataset_name}_{rank}_eval'
+work_dir = f'./outputs/{model_name}_{dataset_name}_{rank}_eval_test'
 """
 
-output_file.write_text(template, encoding='utf8')
+output_file.write_text(template, encoding="utf8")
 print(f"[INFO] Config file generated at: {output_file}")
-print(f"[INFO] run evaluation with {output_file}")
+print(f"[INFO] Use checkpoint-001 to test")
+print(f"[INFO] Run evaluation with {output_file}")
