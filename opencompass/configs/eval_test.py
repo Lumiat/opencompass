@@ -1,6 +1,5 @@
 import argparse
 import sys
-from mmengine.config import read_base
 
 # parse command parameters
 parser = argparse.ArgumentParser(description='OpenCompass evaluation with configurable parameters')
@@ -11,11 +10,16 @@ parser.add_argument('--model', type=str, required=True,
 parser.add_argument('--rank', type=int, required=True,
                     help='LoRA rank value (2, 4, 8, 16, 64)')
 
+
 # get parameters from command
 args, unknown = parser.parse_known_args()
 dataset_name = args.dataset
 model_name = args.model
 rank = args.rank
+
+output_file=f"./test_configs/{dataset_name}/{model_name}_{rank}_eval.py"
+output_dir = os.path.dirname(output_file)              
+os.makedirs(output_dir, exist_ok=True)  
 
 # dynamic model configuration
 dataset_configs = {
@@ -63,20 +67,6 @@ dataset_configs = {
     }
 }
 
-# validate dataset configuration
-if dataset_name not in dataset_configs:
-    print(f"Error: Unsupported dataset '{dataset_name}'. Supported datasets: {list(dataset_configs.keys())}")
-    sys.exit(1)
-
-# dynamic load datasets configuration
-config = dataset_configs[dataset_name]
-with read_base():
-    exec(f"from {config['gen']} import {config['gen_var']}")
-    exec(f"from {config['ppl']} import {config['ppl_var']}")
-
-# set datasets
-datasets = eval(f"[*{config['gen_var']}, *{config['ppl_var']}]")
-
 # dynamic models configuration
 # model_configs = {
 #     'Qwen2.5-0.5B-Instruct': {
@@ -111,16 +101,35 @@ datasets = eval(f"[*{config['gen_var']}, *{config['ppl_var']}]")
 #     },
 # }
 
+# validate dataset configuration
+if dataset_name not in dataset_configs:
+    print(f"[Error] Unsupported dataset '{dataset_name}'. Supported datasets: {list(dataset_configs.keys())}")
+    sys.exit(1)
+
+dataset_cfg = dataset_configs[dataset_name]
+
+# generate configuration files
+template=f"""
+from mmengine.config import read_base
+# dynamic load datasets configuration
+config = dataset_configs[dataset_name]
+with read_base():
+    from {dataset_cfg['gen']} import {dataset_cfg['gen_var']}
+    from {dataset_cfg['ppl']} import {dataset_cfg['ppl_var']}
+
+# set datasets
+datasets = [*{dataset_cfg['gen_var']}, *{dataset_cfg['ppl_var']}]
+
 from opencompass.models import HuggingFaceCausalLM
 
 # dynamic models configuration
 
-model=[
+models=[
     dict(
         type=HuggingFaceCausalLM,
-        abbr=f'{model_name}_rank{rank}_checkpoint-001',
-        path=f'/research-intern02/xjy/ParaGen-Dataset/models/{model_name}',
-        peft_path=f'/research-intern02/xjy/ParaGen-Dataset/saves/common_sense_reasoning/{dataset_name}/{model_name}_lora-rank_{rank}_finetune/checkpoint-001',
+        abbr='{model_name}_rank{rank}_checkpoint-001',
+        path='/research-intern02/xjy/ParaGen-Dataset/models/{model_name}',
+        peft_path='/research-intern02/xjy/ParaGen-Dataset/saves/common_sense_reasoning/{dataset_name}/{model_name}_lora-rank_{rank}_finetune/checkpoint-001',
         max_out_len=128,
         batch_size=8,
         run_cfg=dict(num_gpus=1),
@@ -129,3 +138,8 @@ model=[
 
 # set work_dir
 work_dir = f'./outputs/{model_name}_{dataset_name}_{rank}_eval'
+"""
+
+output_file.write_text(template, encoding='utf8')
+print(f"[INFO] Config file generated at: {output_file}")
+print(f"[INFO] run evaluation with {output_file}")
