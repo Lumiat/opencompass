@@ -176,3 +176,48 @@ class PIQADatasetV3(BaseDataset):
                 'validation': val_dataset
             })
         return dataset
+
+class PIQADatasetValidation(BaseDataset):
+    @staticmethod
+    def load_single(path, data_filename, label_filename):
+        data_path = os.path.join(path, data_filename)
+        label_path = os.path.join(path, label_filename)
+        dataset = []
+        with open(data_path, 'r', encoding='utf-8') as f:
+            data_lines = f.readlines()
+        with open(label_path, 'r', encoding='utf-8') as f:
+            label_lines = f.readlines()
+        assert len(data_lines) == len(label_lines)
+        for data, label in zip(data_lines, label_lines):
+            i = json.loads(data.strip())
+            label = int(label.strip())
+            if label < 0:
+                i['answer'] = 'NULL'
+            else:
+                i['answer'] = 'AB'[label]
+            del i['id']
+            dataset.append(i)
+
+        return Dataset.from_list(dataset)
+
+    @staticmethod
+    def load(path):
+        path = get_data_path(path)
+        if environ.get('DATASET_SOURCE') == 'ModelScope':
+            from modelscope import MsDataset
+            dataset = DatasetDict()
+            ms_dataset = MsDataset.load(path, split='validation')
+            dataset_list = []
+            for item in ms_dataset:
+                label = item['label']
+                dataset_list.append({
+                    'goal': item['goal'],
+                    'sol1': item['sol1'],
+                    'sol2': item['sol2'],
+                    'answer': 'NULL' if label < 0 else 'AB'[label]
+                })
+            dataset['validation'] = Dataset.from_list(dataset_list)
+        else:
+            val_dataset = PIQADatasetV2.load_single(path, 'dev.jsonl', 'dev-labels.lst')
+            dataset = DatasetDict({'validation': val_dataset})
+        return dataset

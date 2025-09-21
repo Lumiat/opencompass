@@ -57,3 +57,21 @@ class BoolQDatasetV3(BaseDataset):
                 ) + line['question'][1:]
                 dataset.append(line)
         return Dataset.from_list(dataset)
+
+
+@LOAD_DATASET.register_module()
+class BoolQDatasetV4(BaseDataset):
+
+    @staticmethod
+    def load(**kwargs):
+        dataset = load_dataset(**kwargs)
+        
+        def preprocess(example):
+            if example['label'] == 'true':
+                example['answer'] = 'True'
+            else:
+                example['answer'] = 'False'
+            return example
+
+        dataset = dataset.map(preprocess)
+        return dataset
