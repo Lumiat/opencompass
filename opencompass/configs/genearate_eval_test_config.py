@@ -76,6 +76,11 @@ dataset_cfg = dataset_configs[dataset_name]
 # generate configuration files
 template = f"""
 from mmengine.config import read_base
+from pathlib import Path
+import sys
+
+sys.path.append(str(Path("/research-intern02/xjy/opencompass/opencompass/configs")))
+
 # dynamic load datasets configuration
 with read_base():
     from {dataset_cfg['gen']} import {dataset_cfg['gen_var']}
