@@ -278,9 +278,15 @@ DATASETS_MAPPING = {
         "local": "./data/summedits/summedits.jsonl",
     },
     # SuperGLUE
+    # ms_id and hf_id no longer exists, use google/boolq instead
+    # "opencompass/boolq": {
+    #     "ms_id": "opencompass/boolq",
+    #     "hf_id": "opencompass/boolq",
+    #     "local": "./data/SuperGLUE/BoolQ/val.jsonl",
+    # },
     "opencompass/boolq": {
-        "ms_id": "opencompass/boolq",
-        "hf_id": "opencompass/boolq",
+        "ms_id": "google/boolq",
+        "hf_id": "google/boolq",
         "local": "./data/SuperGLUE/BoolQ/val.jsonl",
     },
     # TriviaQA
