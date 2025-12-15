@@ -85,7 +85,7 @@ class PIQADatasetV2(BaseDataset):
             from modelscope import MsDataset
             dataset = DatasetDict()
             for split in ['train', 'validation']:
-                ms_dataset = MsDataset.load(path, split=split)
+                ms_dataset = MsDataset.load(path, split=split, trust_remote_code=True)
                 dataset_list = []
                 for item in ms_dataset:
                     label = item['label']
