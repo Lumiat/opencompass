@@ -10,13 +10,21 @@ winogrande_reader_cfg = dict(
     output_column='answer',
 )
 
+system_prompt='You are an AI assistant capable of commonsense reasoning. Read the sentence with the missing part and select the option that most logically fills the blank. Output only the letter of the correct answer (A or B).'
+
 winogrande_infer_cfg = dict(
     prompt_template=dict(
         type=PromptTemplate,
         template=dict(
+            begin=[
+                dict(
+                    role='SYSTEM',
+                    prompt=system_prompt
+                )
+            ],
             round=[
                 dict(role='HUMAN', 
-                     prompt='you are a helpful AI assistant, and you are going to answer the question of the user by picking one answer among the given 2 choices. Answer the capital character of the choice directly. You\'ll only need to answer by a single [ans] (ans is A,B,C,D or True/False)\n{prompt}\nA: {only_option1}\nB: {only_option2}\nPlease answer the question choosing from [A]/[B].'),
+                     prompt='Question: {prompt}\nA. {only_option1}\nB. {only_option2}\nAnswer:'),
             ]
         ),
     ),
