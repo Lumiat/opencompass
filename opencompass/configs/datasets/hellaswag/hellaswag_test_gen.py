@@ -13,12 +13,14 @@ hellaswag_reader_cfg = dict(
 hellaswag_infer_cfg = dict(
     prompt_template=dict(
         type=PromptTemplate,
-        template=dict(round=[
+        template=dict(
+            begin=[
+                dict(role="HUMAN", prompt='You are an expert in commonsense reasoning. Select the most plausible continuation for the given context from options A, B, C, and D. Answer the capital character of the choice directly.')
+            ],
+            round=[
             dict(
                 role='HUMAN',
-                prompt=('Which solution is most appropriate for finishing the following sentence? Sentence: {ctx}\n\n'
-                    'Choices:\nA: {A}\nB: {B}\nC: {C}\nD: {D}\n'
-                    "Please answer the question choosing from [A]/[B]/[C]/[D]."),
+                prompt='{ctx}\nA. {A}\nB. {B}\nC. {C}\nD. {D}\nWhat is the right option?',
             ),
         ]),
     ),

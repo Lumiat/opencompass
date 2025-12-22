@@ -8,30 +8,36 @@ hellaswag_reader_cfg = dict(
     input_columns=['ctx', 'A', 'B', 'C', 'D'],
     output_column='label')
 
+system_prompt='You are an expert in commonsense reasoning. Select the most plausible continuation for the given context from options A, B, C, and D. Answer the capital character of the choice directly.'
+
 hellaswag_infer_cfg = dict(
     prompt_template=dict(
         type=PromptTemplate,
         template={
             'A':
             dict(
+                begin=[dict(role='SYSTEM', prompt=system_prompt)],
                 round=[
                     dict(role='HUMAN', prompt='{ctx}'),
                     dict(role='BOT', prompt='{A}')
                 ], ),
             'B':
             dict(
+                begin=[dict(role='SYSTEM', prompt=system_prompt)],
                 round=[
                     dict(role='HUMAN', prompt='{ctx}'),
                     dict(role='BOT', prompt='{B}')
                 ], ),
             'C':
             dict(
+                begin=[dict(role='SYSTEM', prompt=system_prompt)],
                 round=[
                     dict(role='HUMAN', prompt='{ctx}'),
                     dict(role='BOT', prompt='{C}')
                 ], ),
             'D':
             dict(
+                begin=[dict(role='SYSTEM', prompt=system_prompt)],
                 round=[
                     dict(role='HUMAN', prompt='{ctx}'),
                     dict(role='BOT', prompt='{D}')
