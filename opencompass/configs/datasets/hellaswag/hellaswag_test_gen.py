@@ -15,7 +15,7 @@ hellaswag_infer_cfg = dict(
         type=PromptTemplate,
         template=dict(
             begin=[
-                dict(role="HUMAN", prompt='You are an expert in commonsense reasoning. Select the most plausible continuation for the given context from options A, B, C, and D. Answer the capital character of the choice directly.')
+                dict(role="SYSTEM", prompt='You are an expert in commonsense reasoning. Select the most plausible continuation for the given context from options A, B, C, and D. Answer the capital character of the choice directly.')
             ],
             round=[
             dict(
