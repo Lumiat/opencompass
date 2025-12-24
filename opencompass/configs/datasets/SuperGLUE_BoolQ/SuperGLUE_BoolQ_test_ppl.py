@@ -9,18 +9,24 @@ BoolQ_reader_cfg = dict(
     output_column='answer',
     test_split='validation')
 
+system_prompt = 'You are a helpful assistant. Answer the question based only on the information provided in the passage, and select the corresponding option. Answer the capital character of the option directly.'
+
 BoolQ_infer_cfg = dict(
     prompt_template=dict(
         type=PromptTemplate,
         template={
-            'False':
-            dict(round=[
-                dict(role='HUMAN', prompt='{question}?'),
+            'A':
+            dict(
+                begin=[dict(role='SYSTEM', prompt=system_prompt)],
+                round=[
+                dict(role='HUMAN', prompt='{passage}\nQuestion: {question}\nA. Yes\nB. No\nAnswer:'),
                 dict(role='BOT', prompt='No'),
             ]),
-            'True':
-            dict(round=[
-                dict(role='HUMAN', prompt='{question}?'),
+            'B':
+            dict(
+                begin=[dict(role='SYSTEM', prompt=system_prompt)],
+                round=[
+                dict(role='HUMAN', prompt='{passage}\nQuestion: {question}\nA. Yes\nB. No\nAnswer:'),
                 dict(role='BOT', prompt='Yes'),
             ]),
         },
@@ -31,7 +37,7 @@ BoolQ_infer_cfg = dict(
 
 BoolQ_eval_cfg = dict(evaluator=dict(type=AccEvaluator))
 
-BoolQ_datasets_ppl = [
+boolq_datasets_ppl = [
     dict(
         type=BoolQDatasetV4,
         abbr='BoolQ-test-ppl',

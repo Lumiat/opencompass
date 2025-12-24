@@ -14,10 +14,17 @@ BoolQ_reader_cfg = dict(
 BoolQ_infer_cfg = dict(
     prompt_template=dict(
         type=PromptTemplate,
-        template=dict(round=[
+        template=dict(
+            begin=[
+                dict(
+                    role='SYSTEM',
+                    prompt='You are a helpful assistant. Answer the question based only on the information provided in the passage, and select the corresponding option. Answer the capital character of the option directly.'
+                )
+            ],
+            round=[
             dict(
                 role='HUMAN',
-                prompt='you are a helpful AI assistant, and you are going to answer the question of the user by determining the statement is true or false. Answer true or false directly. You\'ll only need to answer by a single [ans] (ans is A,B,C,D or True/False)\n{question}?'),
+                prompt='{passage}\nQuestion: {question}\nA. Yes\nB. No\nAnswer:'),
         ]),
     ),
     retriever=dict(type=ZeroRetriever),
@@ -30,7 +37,7 @@ BoolQ_eval_cfg = dict(
     pred_postprocessor=dict(type=first_capital_postprocess),
 )
 
-BoolQ_datasets_gen = [
+boolq_datasets_gen = [
     dict(
         abbr='BoolQ-test-gen',
         type=BoolQDatasetV4,
@@ -40,4 +47,3 @@ BoolQ_datasets_gen = [
         eval_cfg=BoolQ_eval_cfg,
     )
 ]
-d
