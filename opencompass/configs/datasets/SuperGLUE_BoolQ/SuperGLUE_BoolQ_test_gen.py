@@ -2,12 +2,12 @@ from opencompass.openicl.icl_prompt_template import PromptTemplate
 from opencompass.openicl.icl_retriever import ZeroRetriever
 from opencompass.openicl.icl_inferencer import GenInferencer
 from opencompass.openicl.icl_evaluator import AccEvaluator
-from opencompass.datasets import BoolQDatasetV4
+from opencompass.datasets import BoolQDatasetV5
 from opencompass.utils.text_postprocessors import first_capital_postprocess
 
 BoolQ_reader_cfg = dict(
-    input_columns='question',
-    output_column='answer',
+    input_columns=['question','passage'],
+    output_column='label',
     test_split='validation'
 )
 
@@ -40,7 +40,7 @@ BoolQ_eval_cfg = dict(
 boolq_datasets_gen = [
     dict(
         abbr='BoolQ-test-gen',
-        type=BoolQDatasetV4,
+        type=BoolQDatasetV5,
         path='opencompass/boolq',
         reader_cfg=BoolQ_reader_cfg,
         infer_cfg=BoolQ_infer_cfg,

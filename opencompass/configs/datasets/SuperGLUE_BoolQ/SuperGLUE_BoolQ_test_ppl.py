@@ -2,11 +2,11 @@ from opencompass.openicl.icl_prompt_template import PromptTemplate
 from opencompass.openicl.icl_retriever import ZeroRetriever
 from opencompass.openicl.icl_inferencer import PPLInferencer
 from opencompass.openicl.icl_evaluator import AccEvaluator
-from opencompass.datasets import BoolQDatasetV4
+from opencompass.datasets import BoolQDatasetV5
 
 BoolQ_reader_cfg = dict(
-    input_columns='question',
-    output_column='answer',
+    input_columns=['question', 'passage'],
+    output_column='label',
     test_split='validation')
 
 system_prompt = 'You are a helpful assistant. Answer the question based only on the information provided in the passage, and select the corresponding option. Answer the capital character of the option directly.'
@@ -39,7 +39,7 @@ BoolQ_eval_cfg = dict(evaluator=dict(type=AccEvaluator))
 
 boolq_datasets_ppl = [
     dict(
-        type=BoolQDatasetV4,
+        type=BoolQDatasetV5,
         abbr='BoolQ-test-ppl',
         path='opencompass/boolq',
         reader_cfg=BoolQ_reader_cfg,
