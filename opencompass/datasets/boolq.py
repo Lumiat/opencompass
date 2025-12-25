@@ -6,7 +6,8 @@ from opencompass.registry import LOAD_DATASET
 from opencompass.utils import get_data_path
 
 from .base import BaseDataset
-
+from os import environ
+import os
 
 @LOAD_DATASET.register_module()
 class BoolQDataset(BaseDataset):
@@ -75,3 +76,35 @@ class BoolQDatasetV4(BaseDataset):
 
         dataset = dataset.map(preprocess)
         return dataset
+    
+@LOAD_DATASET.register_module()
+class BoolQDatasetV5(BaseDataset):
+
+    @staticmethod
+    def load(path):
+        path = get_data_path(path)
+        if environ.get('DATASET_SOURCE') == 'ModelScope':
+            from modelscope import MsDataset
+            ms_dataset = MsDataset.load(path, split='validation')
+            dataset_list = []
+            for line in ms_dataset:
+                data_item = {
+                    'passage': line['passage'],
+                    'question': line['question'],
+                    'label': 'A' if line['label'] == 'true' else 'B',
+                }
+                dataset_list.append(data_item)
+            dataset_list = Dataset.from_list(dataset_list)
+        else:
+            dataset_list = []
+            with open(path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = json.loads(line)
+                    data_item = {
+                        'passage': line['passage'],
+                        'question': line['question'],
+                        'label': 'A' if line['label'] == 'true' else 'B',
+                    }
+                    dataset_list.append(data_item)
+            dataset_list = Dataset.from_list(dataset_list)
+        return dataset_list
