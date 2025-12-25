@@ -91,7 +91,7 @@ class BoolQDatasetV5(BaseDataset):
                 data_item = {
                     'passage': line['passage'],
                     'question': line['question'],
-                    'label': 'A' if line['label'] == 'true' else 'B',
+                    'label': 'A' if line['answer'] == 'true' else 'B',
                 }
                 dataset_list.append(data_item)
             dataset_list = Dataset.from_list(dataset_list)
@@ -103,7 +103,7 @@ class BoolQDatasetV5(BaseDataset):
                     data_item = {
                         'passage': line['passage'],
                         'question': line['question'],
-                        'label': 'A' if line['label'] == 'true' else 'B',
+                        'label': 'A' if line['answer'] == 'true' else 'B',
                     }
                     dataset_list.append(data_item)
             dataset_list = Dataset.from_list(dataset_list)
