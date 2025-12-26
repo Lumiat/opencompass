@@ -109,4 +109,8 @@ class BoolQDatasetV5(BaseDataset):
                     dataset_list.append(data_item)
             dataset_list = Dataset.from_list(dataset_list)
 
-        return DatasetDict({'validation': dataset_list})
+        return DatasetDict({
+            'train': dataset_list,     
+            'validation': dataset_list  
+        })
+
