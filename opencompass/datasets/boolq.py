@@ -1,6 +1,7 @@
 import json
 
 from datasets import Dataset, load_dataset
+from datasets import DatasetDict
 
 from opencompass.registry import LOAD_DATASET
 from opencompass.utils import get_data_path
@@ -107,4 +108,5 @@ class BoolQDatasetV5(BaseDataset):
                     }
                     dataset_list.append(data_item)
             dataset_list = Dataset.from_list(dataset_list)
-        return dataset_list
+
+        return DatasetDict({'validation': dataset_list})
