@@ -19,15 +19,15 @@ BoolQ_infer_cfg = dict(
             dict(
                 begin=[dict(role='SYSTEM', prompt=system_prompt)],
                 round=[
-                dict(role='HUMAN', prompt='{passage}\nQuestion: {question}\nA. Yes\nB. No\nAnswer:'),
-                dict(role='BOT', prompt='No'),
+                dict(role='HUMAN', prompt='{passage}\nQuestion: {question}?\nA. Yes\nB. No\nAnswer:'),
+                dict(role='BOT', prompt='Yes'),
             ]),
             'B':
             dict(
                 begin=[dict(role='SYSTEM', prompt=system_prompt)],
                 round=[
-                dict(role='HUMAN', prompt='{passage}\nQuestion: {question}\nA. Yes\nB. No\nAnswer:'),
-                dict(role='BOT', prompt='Yes'),
+                dict(role='HUMAN', prompt='{passage}\nQuestion: {question}?\nA. Yes\nB. No\nAnswer:'),
+                dict(role='BOT', prompt='No'),
             ]),
         },
     ),
