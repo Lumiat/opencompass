@@ -24,7 +24,7 @@ BoolQ_infer_cfg = dict(
             round=[
             dict(
                 role='HUMAN',
-                prompt='{passage}\nQuestion: {question}\nA. Yes\nB. No\nAnswer:'),
+                prompt='{passage}\nQuestion: {question}?\nA. Yes\nB. No\nAnswer:'),
         ]),
     ),
     retriever=dict(type=ZeroRetriever),
