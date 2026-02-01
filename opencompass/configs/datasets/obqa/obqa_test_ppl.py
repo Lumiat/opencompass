@@ -45,8 +45,6 @@ obqa_infer_cfg = dict(
 
 obqa_eval_cfg = dict(
     evaluator=dict(type=AccEvaluator),
-    pred_role='BOT',
-    pred_postprocessor=dict(type=AccEvaluator),
 )
 
 obqa_datasets_ppl = [
