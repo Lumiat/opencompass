@@ -5,36 +5,38 @@ from opencompass.openicl.icl_evaluator import AccEvaluator
 from opencompass.datasets import OBQADataset
 
 obqa_reader_cfg = dict(
-    input_columns=['question_stem', 'A', 'B', 'C', 'D'], output_column='answerKey'
+    input_columns=['question_stem', 'A', 'B', 'C', 'D', 'fact1'], output_column='answerKey'
 )
+
+system_prompt='you are a helpful AI assistant, and you are going to answer the question of the user by picking one answer among the given choices. Answer the capital character of the choice directly.'
 
 obqa_infer_cfg = dict(
     prompt_template=dict(
     type=PromptTemplate,
     template={
-        'A':
-            dict(
+            'A':dict(
+                begin=[dict(role='SYSTEM', prompt=system_prompt)],
                 round=[
-                    dict(role='HUMAN', prompt='Question: {question_stem}\nAnswer: '),
-                    dict(role='BOT', prompt='{A}')
+                    dict(role='HUMAN', prompt='Given the fact: {fact1}\nQuestion: {question_stem}\nA. {A}\nB. {B}\nC. {C}\nD. {D}\nAnswer:'),
+                    dict(role='BOT', prompt='A')
                 ], ),
-            'B':
-            dict(
+            'B':dict(
+                begin=[dict(role='SYSTEM', prompt=system_prompt)],
                 round=[
-                    dict(role='HUMAN', prompt='Question: {question_stem}\nAnswer: '),
-                    dict(role='BOT', prompt='{B}')
+                    dict(role='HUMAN', prompt='Given the fact: {fact1}\nQuestion: {question_stem}\nA. {A}\nB. {B}\nC. {C}\nD. {D}\nAnswer:'),
+                    dict(role='BOT', prompt='B')
                 ], ),
-            'C':
-            dict(
+            'C':dict(
+                begin=[dict(role='SYSTEM', prompt=system_prompt)],
                 round=[
-                    dict(role='HUMAN', prompt='Question: {question_stem}\nAnswer: '),
-                    dict(role='BOT', prompt='{C}')
+                    dict(role='HUMAN', prompt='Given the fact: {fact1}\nQuestion: {question_stem}\nA. {A}\nB. {B}\nC. {C}\nD. {D}\nAnswer:'),
+                    dict(role='BOT', prompt='C')
                 ], ),
-            'D':
-            dict(
+            'D':dict(
+                begin=[dict(role='SYSTEM', prompt=system_prompt)],
                 round=[
-                    dict(role='HUMAN', prompt='Question: {question_stem}\nAnswer: '),
-                    dict(role='BOT', prompt='{D}')
+                    dict(role='HUMAN', prompt='Given the fact: {fact1}\nQuestion: {question_stem}\nA. {A}\nB. {B}\nC. {C}\nD. {D}\nAnswer:'),
+                    dict(role='BOT', prompt='D')
                 ], ),
     },),
     retriever=dict(type=ZeroRetriever),
@@ -49,9 +51,12 @@ obqa_eval_cfg = dict(
 
 obqa_datasets_ppl = [
     dict(
-        abbr='openbookqa-test-ppl',
+        abbr='obqa-test-ppl',
         type=OBQADataset,
         path='opencompass/openbookqa_test',
-        name='main',
+        name='additional',
+        reader_cfg=obqa_reader_cfg,
+        infer_cfg=obqa_infer_cfg,
+        eval_cfg=obqa_eval_cfg,
     ),
 ]

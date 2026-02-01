@@ -6,18 +6,26 @@ from opencompass.datasets import OBQADataset
 from opencompass.utils.text_postprocessors import first_option_postprocess
 
 obqa_reader_cfg = dict(
-    input_columns=['question_stem', 'A', 'B', 'C', 'D'], output_column='answerKey'
+    input_columns=['question_stem', 'A', 'B', 'C', 'D', 'fact1'], output_column='answerKey'
 )
+
+system_prompt='you are a helpful AI assistant, and you are going to answer the question of the user by picking one answer among the given choices. Answer the capital character of the choice directly.'
 
 obqa_infer_cfg = dict(
     prompt_template=dict(
         type=PromptTemplate,
         template=dict(
+            begin=[
+                dict(
+                    role='SYSTEM',
+                    prompt=system_prompt
+                )
+            ],
             round=[
                     dict(
                         role='HUMAN',
                         prompt=
-                        'you are a helpful AI assistant, and you are going to answer the question of the user by picking one answer among the given choices. Answer the capital character of the choice directly. You\'ll only need to answer by a single [ans] (ans is A,B,C,D or True/False)\n{question_stem}\nA: {A}\nB: {B}\nC: {C}\nD: {D}\nPlease answer the question choosing from [A]/[B]/[C]/[D].'
+                        'Given the fact: {fact1}\nQuestion: {question_stem}\nA: {A}\nB: {B}\nC: {C}\nD: {D}\nAnswer:'
                     ),
                 ],
         )
@@ -34,9 +42,12 @@ obqa_eval_cfg = dict(
 
 obqa_datasets_gen = [
     dict(
-        abbr='openbookqa-test-gen',
+        abbr='obqa-test-gen',
         type=OBQADataset,
         path='opencompass/openbookqa_test',
-        name='main',
+        name='additional',
+        reader_cfg=obqa_reader_cfg,
+        infer_cfg=obqa_infer_cfg,
+        eval_cfg=obqa_eval_cfg,
     ),
 ]
