@@ -21,7 +21,8 @@ class WinograndeDataset(BaseDataset):
             from modelscope import MsDataset
             ms_dataset = MsDataset.load(path,
                                         subset_name='winogrande_xs',
-                                        split='validation')
+                                        split='validation',
+                                        trust_remote_code=True)
             dataset_list = []
             for line in ms_dataset:
                 prompt = line['sentence']
@@ -70,7 +71,8 @@ class WinograndeDatasetV2(BaseDataset):
             from modelscope import MsDataset
             ms_dataset = MsDataset.load(path,
                                         subset_name='winogrande_xs',
-                                        split='validation')
+                                        split='validation',
+                                        trust_remote_code=True)
             dataset_list = []
             for line in ms_dataset:
                 prompt = line['sentence']
@@ -125,7 +127,8 @@ class WinograndeDatasetV3(BaseDataset):
             for split in ['train', 'validation']:
                 ms_dataset = MsDataset.load(path,
                                             subset_name='winogrande_xs',
-                                            split=split)
+                                            split=split,
+                                            trust_remote_code=True)
                 dataset_list = []
                 for line in ms_dataset:
                     prompt = line['sentence']
